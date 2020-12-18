@@ -1,1 +1,35 @@
+import numpy as np
+import pandas as pd
+import sklearn.datasets as skd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+#from sklearn.naive_bayes import BernoulliNB
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
+
+# Load the dataset
+categories = ['alt.atheism', 'soc.religion.christian','comp.graphics', 'sci.med']
+train = skd.load_files('C:\\Users\\sharm\\Documents\\Iswc2020Matcher\\News20\\data\\20news-bydate-train', categories= categories, encoding= 'ISO-8859-1')
+test = skd.load_files('C:\\Users\\sharm\\Documents\\Iswc2020Matcher\\News20\\data\\20news-bydate-test',categories= categories, encoding= 'ISO-8859-1')
+# prepare training data
+mydata_train_df = pd.DataFrame({'data': train.data, 'target': train.target})
+print(mydata_train_df.head())
+
+# Preparing test data
+mydata_test_df = pd.DataFrame({'data': test.data, 'target': test.target})
+print(mydata_test_df.head())
+
+# Extracting features from text files using count vectorizer
+count_vect = CountVectorizer(stop_words='english')
+X_train_cv = count_vect.fit_transform(mydata_train_df.data)  # fit_transform learns the vocab and one-hot encodes
+X_test_cv = count_vect.transform(mydata_test_df.data) # transform uses the same vocab and one-hot encodes
+
+# Know the shape of vector
+print(X_train_cv.shape)
+print(X_test_cv.shape)
+
+# Apply Multinomial Naive Bayes Classifier 
+MN_clf = MultinomialNB()
+MN_clf.fit(X_train_cv, mydata_train_df.target)
+print(MN_clf.score(X_test_cv, mydata_test_df.target))
 
